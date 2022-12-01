@@ -73,6 +73,8 @@ extension String.Encoding {
             return .universalString
         case .utf16BigEndian:
             return .bmpString
+        case .isoLatin1:
+            return .t61String
         default:
             return nil
         }
@@ -99,6 +101,8 @@ extension ASN1Tag {
             return .utf16BigEndian
         case .printableString:
             return .ascii
+        case .t61String:
+            return .isoLatin1
         case .visibleString:
             return .ascii
         case .generalString:

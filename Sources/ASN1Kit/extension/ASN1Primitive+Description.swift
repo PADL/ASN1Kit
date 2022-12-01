@@ -57,6 +57,7 @@ extension ASN1Tag {
         case .bmpString: fallthrough
         case .universalString: fallthrough
         case .printableString: fallthrough
+        case .t61String: fallthrough
         case .ia5String: fallthrough
         case .visibleString: fallthrough
         case .generalString: fallthrough
