@@ -14,15 +14,17 @@
 // limitations under the License.
 //
 
-import Commandant
+import ArgumentParser
 import Foundation
 
-let commands = CommandRegistry<ParseCommand.Error>()
-commands.register(ParseCommand())
-commands.register(VersionCommand())
-let helpCommand = HelpCommand(registry: commands)
-commands.register(helpCommand)
-
-commands.main(defaultVerb: helpCommand.verb) { error in
-    print("\(error)")
+struct ASN1CLI: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "asn1",
+        abstract: "ASN.1 parsing and utilities",
+        version: "1.0",
+        subcommands: [ParseCommand.self, VersionCommand.self],
+        defaultSubcommand: ParseCommand.self
+    )
 }
+
+ASN1CLI.main()

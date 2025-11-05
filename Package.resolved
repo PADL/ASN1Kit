@@ -2,15 +2,6 @@
   "object": {
     "pins": [
       {
-        "package": "Commandant",
-        "repositoryURL": "http://github.com/Carthage/Commandant",
-        "state": {
-          "branch": null,
-          "revision": "a1671cf728db837cf5ec1980a80d276bbba748f6",
-          "version": "0.18.0"
-        }
-      },
-      {
         "package": "CwlCatchException",
         "repositoryURL": "https://github.com/mattgallagher/CwlCatchException.git",
         "state": {
@@ -44,6 +35,15 @@
           "branch": null,
           "revision": "af1730dde4e6c0d45bf01b99f8a41713ce536790",
           "version": "9.2.0"
+        }
+      },
+      {
+        "package": "swift-argument-parser",
+        "repositoryURL": "https://github.com/apple/swift-argument-parser",
+        "state": {
+          "branch": null,
+          "revision": "cdd0ef3755280949551dc26dee5de9ddeda89f54",
+          "version": "1.6.2"
         }
       },
       {
