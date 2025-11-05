@@ -1,12 +1,12 @@
 //
 // Copyright (c) 2022 gematik GmbH
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the License);
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an 'AS IS' BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,44 @@
 //
 
 import ASN1Kit
-import Commandant
+import ArgumentParser
 import DataKit
 import Foundation
 
-struct ParseCommand: CommandProtocol {
-    enum Error: Swift.Error {
+struct ParseCommand: ParsableCommand {
+    static let configuration = CommandConfiguration(
+        commandName: "parse",
+        abstract: "Parse ASN.1 encoded file or from cmd-line input"
+    )
+
+    enum ParseError: Error, CustomStringConvertible {
         case unsupportedMode(_: String)
         case asn1Error(Swift.Error)
+
+        var description: String {
+            switch self {
+            case .unsupportedMode(let message):
+                return message
+            case .asn1Error(let error):
+                return error.localizedDescription
+            }
+        }
     }
 
-    let verb: String = "parse"
-    let function: String = "Parse ASN.1 encoded file or from cmd-line input"
+    @Option(name: .shortAndLong, help: "path to ANS.1 encoded file")
+    var file: String = ""
 
-    func run(_ options: Options) -> Result<(), Error> {
-        let file = URL(fileURLWithPath: (options.file as NSString).expandingTildeInPath)
-        let fileContents = try? file.readFileContents()
-        guard !options.string.isEmpty || fileContents != nil else {
-            return .failure(.unsupportedMode("No string or valid file path passed"))
+    @Option(name: .shortAndLong, help: "String passed as ASN.1 encoded hex")
+    var string: String = ""
+
+    @Flag(name: .shortAndLong, help: "Show verbose logging")
+    var verbose: Bool = false
+
+    func run() throws {
+        let fileURL = URL(fileURLWithPath: (file as NSString).expandingTildeInPath)
+        let fileContents = try? fileURL.readFileContents()
+        guard !string.isEmpty || fileContents != nil else {
+            throw ParseError.unsupportedMode("No string or valid file path passed")
         }
 
         do {
@@ -40,40 +60,14 @@ struct ParseCommand: CommandProtocol {
             if let fileContents = fileContents {
                 data = fileContents
             } else {
-                let sanitized = options.string.sanitize()
+                let sanitized = string.sanitize()
                 data = try Data(hex: sanitized)
             }
             let asn1 = try ASN1Decoder.decode(asn1: data)
 
             print("ASN1: [\(asn1)]")
-
-            return .success(())
         } catch let error {
-            return .failure(.asn1Error(error))
-        }
-    }
-
-    struct Options: OptionsProtocol {
-        let file: String
-        let string: String
-        let verbose: Bool
-
-        static func create(_ file: String) -> (String) -> (Bool) -> Options {
-            return { (string: String) in { (verbose: Bool) in
-                    Options(
-                            file: file,
-                            string: string,
-                            verbose: verbose)
-                }
-            }
-        }
-
-        static func evaluate(_ m: CommandMode) -> Result<Options, CommandantError<Error>> {
-            //swiftlint:disable:previous identifier_name
-            return create
-                    <*> m <| Option(key: "f", defaultValue: "", usage: "path to ANS.1 encoded file")
-                    <*> m <| Option(key: "s", defaultValue: "", usage: "String passed as ASN.1 encoded hex")
-                    <*> m <| Option(key: "v", defaultValue: false, usage: "Show verbose logging")
+            throw ParseError.asn1Error(error)
         }
     }
 }

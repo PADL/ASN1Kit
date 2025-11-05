@@ -27,7 +27,7 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
         .package(url: "http://github.com/Quick/Nimble", from: "9.2.0"),
         .package(url: "https://github.com/SwiftCommon/DataKit.git", from: "1.1.0"),
-        .package(url: "http://github.com/Carthage/Commandant", from: "0.17.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.0.0"),
         .package(name: "GemCommonsKit", url: "https://github.com/gematik/ref-GemCommonsKit", .branch("1.2.0"))
     ],
     targets: [
@@ -38,7 +38,7 @@ let package = Package(
             dependencies: ["DataKit", "GemCommonsKit"]),
         .target(
             name: "CLI",
-            dependencies: ["ASN1Kit", "Commandant"]),
+            dependencies: ["ASN1Kit", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
             name: "ASN1KitTests",
             dependencies: ["ASN1Kit", "Nimble"]),
